@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { PokemonModule } from './pokemon/pokemon.module';
 import { validate } from './core/env.validation';
+import { PowerModule } from './power/power.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { validate } from './core/env.validation';
     StoreModule,
     PrismaModule,
     PokemonModule,
+    PowerModule,
   ],
   controllers: [],
   providers: [],
