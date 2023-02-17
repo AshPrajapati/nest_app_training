@@ -1,27 +1,40 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { Pokemon } from '@prisma/client';
+import PokemonDto from './pokemon.dto';
 import { PokemonService } from './pokemon.service';
-import { CreatePokemonDto } from './create-pokemon.dto';
-@Controller('/pokemon')
+
+@Controller('pokemon')
 export class PokemonController {
   constructor(private readonly pokemonService: PokemonService) {}
-  @Get('/')
-  getAllPokemons(): Promise<Pokemon[]> {
-    return this.pokemonService.findAllPokemons();
+  @Get()
+  getAllPokemon() {
+    return this.pokemonService.findAllPokemon();
   }
 
-  @Post('/')
-  savePokemon(@Body() pokemonDto: CreatePokemonDto) {
-    return this.pokemonService.savePokemon(pokemonDto);
+  @Post()
+  savePokemons(@Body() pokemon: PokemonDto) {
+    return this.pokemonService.savePokemon(pokemon);
   }
 
-  @Get('/:id')
+  @Get(':id')
   getPokemonById(@Param() params) {
     return this.pokemonService.getPokemonById(+params.id);
   }
 
-  @Delete('/:id')
+  @Delete(':id')
   deletePokemonById(@Param() params) {
-    return this.pokemonService.deletePokemonById(+params.id);
+    return this.pokemonService.deleteById(+params.id);
+  }
+
+  @Post(':id/powers')
+  addPowerToPokemonById(
+    @Param() { id },
+    @Body() payload: { powers: PokemonDto['powers'] },
+  ) {
+    return this.pokemonService.addPowerToPokemonById(+id, payload.powers);
+  }
+
+  @Delete(':id/powers/:powerId')
+  deletePokemonPowerById(@Param() params) {
+    return this.pokemonService.deletePokemonPower(+params.id, +params.powerId);
   }
 }

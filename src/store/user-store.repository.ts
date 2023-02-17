@@ -1,21 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { UserEntity } from './../user/user.entity';
+import { UserEntity } from 'src/user/user.entity';
 
 @Injectable()
-export class UserStoreRepository {
-  users: UserEntity[] = [];
-  save(user: UserEntity) {
-    if (this.getByEmail(user.email)) {
-      throw new Error('User Email is already in use');
-    }
-    this.users.push(user);
+export class UserStore {
+  private users: UserEntity[];
+
+  constructor() {
+    this.users = [
+      {
+        id: 'd81f65b7-6126-45c8-8009-1525014e6537',
+        email: 'joh11n@gmail.com',
+        password:
+          '$2b$10$Z31MVNXbJ.uCN466Duazou6mQ5QfoUjcB4THqu5AxZr0qcC71Sseu',
+      },
+    ];
   }
 
-  getByEmail(email: string) {
-    return this.users.find((currUser) => currUser.email === email);
+  getUsers() {
+    return this.users;
   }
 
-  getById(id: string) {
+  addUser(newUser: UserEntity) {
+    this.users = this.users.concat([newUser]);
+  }
+
+  findUserById(id: string) {
     return this.users.find((currUser) => currUser.id === id);
+  }
+  findUserByEmail(email: string) {
+    return this.users.find((currUser) => currUser.email === email);
   }
 }

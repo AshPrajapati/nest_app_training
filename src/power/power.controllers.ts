@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { PowerService } from './power.service';
 
-@Controller('/power')
+@Controller('/powers')
 export class PowerController {
   constructor(private readonly powerService: PowerService) {}
   @Get('/')

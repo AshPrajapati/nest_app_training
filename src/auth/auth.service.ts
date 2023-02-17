@@ -1,47 +1,55 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  BadRequestException,
-} from '@nestjs/common';
-import { UserStoreRepository } from '../store/user-store.repository';
-import { AuthDTO } from './auth.dto';
-import { UserEntity } from './../user/user.entity';
+import { BadRequestException, Injectable } from '@nestjs/common';
+
 import { compareSync, hashSync } from 'bcrypt';
+import { randomUUID } from 'crypto';
+
 import { JwtService } from '@nestjs/jwt/dist';
+import { UserStore } from 'src/store/user-store.repository';
+import { AuthDTO } from './auth.dto';
+import { UserEntity } from 'src/user/user.entity';
+
 @Injectable()
-export class AuthService {
+export default class AuthService {
   constructor(
-    private readonly userStore: UserStoreRepository,
+    private readonly userStore: UserStore,
     private readonly jwtService: JwtService,
   ) {}
 
-  signup(authData: AuthDTO) {
-    const foundUser = this.userStore.getByEmail(authData.email);
-    if (foundUser) throw new BadRequestException('Email Already exist');
-    const hashedPassword = hashSync(authData.password, 10);
-    const user: UserEntity = {
-      id: '123',
-      email: authData.email,
+  signupUser(authData: AuthDTO) {
+    const { email, password } = authData;
+
+    const foundUserWithEmail = this.userStore.findUserByEmail(email);
+    if (foundUserWithEmail) {
+      throw new BadRequestException('Entered email is already exists!');
+    }
+
+    const hashedPassword = hashSync(password, 10);
+    const newUser: UserEntity = {
+      id: randomUUID(),
+      email,
       password: hashedPassword,
     };
+    this.userStore.addUser(newUser);
 
-    this.userStore.save(user);
-    return { message: 'User successfully signed up' };
+    console.log(newUser);
+
+    return {
+      id: newUser.id,
+      email,
+    };
   }
 
-  async signin(authData: AuthDTO) {
-    const user = this.userStore.getByEmail(authData.email);
-    if (!user) {
-      throw new UnauthorizedException('Invalid Email id');
-    }
+  signInUser(authData: AuthDTO) {
+    const { email, password } = authData;
 
-    if (!compareSync(authData.password, user.password)) {
-      throw new UnauthorizedException('Invalid Password');
+    const foundUser = this.userStore.findUserByEmail(email);
+    if (!foundUser) {
+      throw new BadRequestException('Invalid Email!');
     }
-    const accessToken = await this.jwtService.signAsync({
-      id: user.id,
-      email: user.email,
-    });
+    if (!compareSync(password, foundUser.password)) {
+      throw new BadRequestException('Invalid Password!');
+    }
+    const accessToken = this.jwtService.sign({ id: foundUser.id });
 
     return { accessToken };
   }

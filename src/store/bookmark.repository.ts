@@ -1,30 +1,56 @@
 import { Injectable } from '@nestjs/common';
-import { BookMarkEntity } from './../bookmark/bookmark.entity';
+import { BookMarkEntity } from 'src/bookmark/bookmark.entity';
 
 @Injectable()
-export class BookMarkRepository {
-  bookMarks: BookMarkEntity[] = [];
-
-  save(newBookMark: BookMarkEntity) {
-    this.bookMarks.push(newBookMark);
+export default class BookMarkStore {
+  private bookmarks: BookMarkEntity[];
+  constructor() {
+    this.bookmarks = [
+      {
+        id: '5cd6adf1-a9e6-4448-87a5-ab3a470c3c44',
+        description: 'description',
+        name: 'Test',
+        url: 'url',
+        userId: '236ea4a6-e329-4ca8-9836-aeb15a3cffe4',
+      },
+    ];
   }
-  getAll(): BookMarkEntity[] {
-    return this.bookMarks;
+
+  getBookMarks() {
+    return this.bookmarks;
   }
 
-  getById(id: string) {
-    return this.bookMarks.find((currBookMark) => currBookMark.id === id);
+  addBookMark(newBookMark: BookMarkEntity) {
+    this.bookmarks = this.bookmarks.concat([newBookMark]);
   }
 
-  delete(id: string) {
-    const foundBookMarkIndex = this.bookMarks.findIndex(
-      (currBookMark) => currBookMark.id === id,
+  findBookMarkOfUserById(id: string, userId: string) {
+    return this.bookmarks.find(
+      (currBookMark) =>
+        currBookMark.id === id && currBookMark.userId === userId,
     );
-    if (foundBookMarkIndex === -1) {
-      throw new Error('Bookmark not found');
+  }
+
+  deleteBookMarkById(id: string, userId: string) {
+    this.bookmarks = this.bookmarks.filter(
+      (currBookMark) =>
+        currBookMark.id !== id && currBookMark.userId !== userId,
+    );
+  }
+
+  updateBookMarkById(
+    id: string,
+    userId: string,
+    updatedBookMark: BookMarkEntity,
+  ) {
+    const bookMarkIdx = this.bookmarks.findIndex(
+      (currBookMark) =>
+        currBookMark.id === id && currBookMark.userId === userId,
+    );
+    if (bookMarkIdx === -1) {
+      return undefined;
     }
-    this.bookMarks = this.bookMarks.filter(
-      (currBookMark) => currBookMark.id !== id,
-    );
+    this.bookmarks[bookMarkIdx] = updatedBookMark;
+    return updatedBookMark;
   }
 }
