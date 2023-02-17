@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { Bookmark } from '@prisma/client';
 import { User } from '../user/user.decorator';
 import { BookmarkService } from './bookmark.service';
@@ -10,6 +10,11 @@ import { JwtPayload } from '../jwt-auth-strategy/jwt-payload';
 @UseGuards(JwtAuthGuard)
 export class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}
+
+  @Get()
+  getAllBookmarks(@User() user: JwtPayload) {
+    return this.bookmarkService.getAllBookmarks(user.id);
+  }
 
   @Post()
   createBookmark(

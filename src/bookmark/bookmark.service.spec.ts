@@ -18,6 +18,7 @@ describe('Bookmark', () => {
             return {
               bookmark: {
                 create: jest.fn(),
+                findMany: jest.fn(),
               },
             };
           },
@@ -60,5 +61,18 @@ describe('Bookmark', () => {
     expect(result.id).toBeDefined();
     expect(result.userId).toEqual('userId');
     expect(result).toMatchObject(bookmark);
+  });
+
+  it('should return empty list if user has no bookmarks', async () => {
+    const userId = 'id';
+    jest.spyOn(prismaService.bookmark, 'findMany').mockResolvedValueOnce([]);
+    const result = await bookmarkService.getAllBookmarks(userId);
+    expect(result).toHaveLength(0);
+    expect(prismaService.bookmark.findMany).toBeCalledTimes(1);
+    expect(prismaService.bookmark.findMany).toBeCalledWith({
+      where: {
+        userId,
+      },
+    });
   });
 });

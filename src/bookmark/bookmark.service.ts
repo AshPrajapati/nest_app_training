@@ -6,6 +6,11 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class BookmarkService {
   constructor(private readonly prismaService: PrismaService) {}
+  getAllBookmarks(userId: string): Promise<Bookmark[]> {
+    return this.prismaService.bookmark.findMany({
+      where: { userId },
+    });
+  }
 
   saveBookmark(
     bookmarkToSave: CreateBookmarkDTO,
