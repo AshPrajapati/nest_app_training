@@ -90,7 +90,7 @@ export class PokemonService {
     if (!foundPokemonPower) {
       throw new NotFoundException('Pokmon do not have entered power');
     }
-    await this.prismaService.pokemonPower.deleteMany({
+    await this.prismaService.pokemonPower.delete({
       where: {
         id: foundPokemonPower.id,
       },

@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { PokemonModule } from './pokemon/pokemon.module';
 import { validate } from './core/env.validation';
 import { PowerModule } from './power/power.module';
+import { BookmarkModule } from './bookmark/bookmark.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PowerModule } from './power/power.module';
     PrismaModule,
     PokemonModule,
     PowerModule,
+    BookmarkModule,
   ],
   controllers: [],
   providers: [],
