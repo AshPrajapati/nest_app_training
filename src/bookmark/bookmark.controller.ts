@@ -1,56 +1,21 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Headers,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
-import { UseGuards } from '@nestjs/common/decorators';
-import { JwtAuthGuard } from 'src/jwt-auth-guard/jwt-auth.guard';
-import { JwtPayload } from 'src/jwt-auth-strategy/jwt-payload';
-import { User } from 'src/user/user.decorator';
-import BookMarkDTO from './bookmark.dto';
-import BookMarkService from './bookmark.service';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Bookmark } from '@prisma/client';
+import { User } from '../user/user.decorator';
+import { BookmarkService } from './bookmark.service';
+import { CreateBookmarkDTO } from './dto/create-bookmark.dto';
+import { JwtAuthGuard } from './../jwt-auth-guard/jwt-auth.guard';
+import { JwtPayload } from '../jwt-auth-strategy/jwt-payload';
 
+@Controller('bookmark')
 @UseGuards(JwtAuthGuard)
-@Controller('bookmarks')
-export default class BookMarkController {
-  constructor(private readonly bookMarkService: BookMarkService) {}
-
-  @Get()
-  getAllBookmarks(@User() user: JwtPayload) {
-    console.log('this is user ', user);
-    return this.bookMarkService.getBookMarks(user.id);
-  }
+export class BookmarkController {
+  constructor(private readonly bookmarkService: BookmarkService) {}
 
   @Post()
-  addBookMark(@Body() bookMarkBody: BookMarkDTO, @User() user: JwtPayload) {
-    return this.bookMarkService.addBookMark(bookMarkBody, user.id);
-  }
-
-  @Get(':id')
-  getBookMarkById(@Param() params, @User() user: JwtPayload) {
-    return this.bookMarkService.getBookMarkById(params.id, user.id);
-  }
-
-  @Put(':id')
-  updateBookMarkById(
-    @Param() params,
+  createBookmark(
+    @Body() bookMarkToCreate: CreateBookmarkDTO,
     @User() user: JwtPayload,
-    @Body() bookMarkData: BookMarkDTO,
-  ) {
-    return this.bookMarkService.updateBookMark(
-      params.id,
-      user.id,
-      bookMarkData,
-    );
-  }
-
-  @Delete(':id')
-  deleteBookMarkById(@Param() params, @User() user: JwtPayload) {
-    return this.bookMarkService.deleteBookMark(params.id, user.id);
+  ): Promise<Bookmark> {
+    return this.bookmarkService.saveBookmark(bookMarkToCreate, user.id);
   }
 }

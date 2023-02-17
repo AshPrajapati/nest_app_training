@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { Pokemon, Power } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import PokemonDto from './pokemon.dto';
 
 type PokemonResponse = Pokemon & { powers: Power[] };
